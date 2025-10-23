@@ -29,6 +29,10 @@ The production build will be in `build/web/` and is deployed on Firebase Hosting
    Superior to alternatives like fl_chart for complex time-series visualization. |
 | **provider** | ^6.1.1 | State Management | Lightweight, officially recommended by Flutter team. Perfect for this app's complexity level without the overhead of Riverpod/Bloc. |
 | **intl** | ^0.18.1 | Date Formatting | Standard library for internationalized date/time formatting. Reliable and well-maintained. |
+| **Gap** | ^3.0.1 | Horizontal and Vertical Spacing | Automatically adds spacing to widgets like Row/Column. |
+| **flutter_screenutil** | ^5.9.3 | Screen Responsive layout | Maintains and sizes widgets accoriding to screen layout changes |
+| **google_fonts** | ^6.3.2 | Adding Custom fonts to App | Gives access to various fonts and themes. |
+| **firebase_core** | ^4.2.0 | Firebase Database connectivity and Initialization |Connects app to firebase for hosting services |
 
 ### Why Syncfusion Charts?
 
