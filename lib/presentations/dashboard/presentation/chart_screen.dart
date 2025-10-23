@@ -7,6 +7,8 @@ import 'package:health_dashboard/helpers/mood_indicator.dart';
 import 'package:health_dashboard/helpers/theming/theme_provider.dart';
 import 'package:health_dashboard/presentations/dashboard/data/dashboard_provider.dart';
 import 'package:health_dashboard/presentations/dashboard/presentation/charts/hrv_chart.dart';
+import 'package:health_dashboard/presentations/dashboard/presentation/charts/rhr_chart.dart';
+import 'package:health_dashboard/presentations/dashboard/presentation/charts/steps_chart.dart';
 import 'package:health_dashboard/presentations/dashboard/presentation/journal_dropdown.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -128,13 +130,74 @@ class _SynchronizedBiometricChartsState
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return  Consumer<ThemeProvider>(
-            builder: (context, themes, _) {
-              bool isSmallScreen = constraints.maxWidth < 1300;
-              return isSmallScreen
-                  ? Column(
-                      children: [
-                        Container(
+        return Consumer<ThemeProvider>(
+          builder: (context, themes, _) {
+            bool isSmallScreen = constraints.maxWidth < 1300;
+            return isSmallScreen
+                ? Column(
+                    children: [
+                      Container(
+                        child: _buildChartCard(
+                          context,
+                          'Heart Rate Variability (HRV)',
+                          'ms',
+                          DisplayHRVChart(
+                            data: filteredData,
+                            rollingMean: rollingMean,
+                            isDark: themes.isDarkMode,
+                            zoomPanBehavior: _zoomPanBehavior,
+                            trackballBehavior: _trackballBehavior,
+                            onChartTouchInteractionDown:
+                                (ChartTouchInteractionArgs args) {
+                                  //     _handleChartTap(args, widget.data);
+                                },
+                            annotations: [
+                              ..._buildJournalAnnotations(
+                                filteredData,
+                                themes.isDarkMode,
+                              ),
+                            ],
+                          ),
+                          themes.isDarkMode,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildChartCard(
+                        context,
+                        'Resting Heart Rate (RHR)',
+                        'bpm',
+
+                        RHRChartScreen(
+                          data: filteredData,
+                          isDark: themes.isDarkMode,
+                          zoomPanBehavior: _zoomPanBehavior,
+                          trackballBehavior: _trackballBehavior,
+                        ),
+                        themes.isDarkMode,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildChartCard(
+                        context,
+                        'Daily Steps',
+                        'steps',
+                        StepsChartScreen(
+                          data: filteredData,
+                          isDark: themes.isDarkMode,
+                          zoomPanBehavior: _zoomPanBehavior,
+                          trackballBehavior: _trackballBehavior,
+                        ),
+                        themes.isDarkMode,
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(30),
+                          width: 700,
+                          height: 650,
                           child: _buildChartCard(
                             context,
                             'Heart Rate Variability (HRV)',
@@ -146,9 +209,7 @@ class _SynchronizedBiometricChartsState
                               zoomPanBehavior: _zoomPanBehavior,
                               trackballBehavior: _trackballBehavior,
                               onChartTouchInteractionDown:
-                                  (ChartTouchInteractionArgs args) {
-                                    //     _handleChartTap(args, widget.data);
-                                  },
+                                  (ChartTouchInteractionArgs args) {},
                               annotations: [
                                 ..._buildJournalAnnotations(
                                   filteredData,
@@ -159,91 +220,52 @@ class _SynchronizedBiometricChartsState
                             themes.isDarkMode,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildChartCard(
-                          context,
-                          'Resting Heart Rate (RHR)',
-                          'bpm',
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(30),
+                          width: 700,
+                          height: 650,
+                          child: _buildChartCard(
+                            context,
+                            'Resting Heart Rate (RHR)',
+                            'bpm',
 
-                          _buildRHRChart(filteredData, themes.isDarkMode),
-                          themes.isDarkMode,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildChartCard(
-                          context,
-                          'Daily Steps',
-                          'steps',
-                          _buildStepsChart(filteredData, themes.isDarkMode),
-                          themes.isDarkMode,
-                        ),
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(30),
-                            width: 700,
-                            height: 650,
-                            child: _buildChartCard(
-                              context,
-                              'Heart Rate Variability (HRV)',
-                              'ms',
-                              DisplayHRVChart(
-                                data: filteredData,
-                                rollingMean: rollingMean,
-                                isDark: themes.isDarkMode,
-                                zoomPanBehavior: _zoomPanBehavior,
-                                trackballBehavior: _trackballBehavior,
-                                onChartTouchInteractionDown:
-                                    (ChartTouchInteractionArgs args) {},
-                                annotations: [
-                                  ..._buildJournalAnnotations(
-                                    filteredData,
-                                    themes.isDarkMode,
-                                  ),
-                                ],
-                              ),
-                              themes.isDarkMode,
+                            RHRChartScreen(
+                              data: filteredData,
+                              isDark: themes.isDarkMode,
+                              zoomPanBehavior: _zoomPanBehavior,
+                              trackballBehavior: _trackballBehavior,
                             ),
+                            themes.isDarkMode,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(30),
-                            width: 700,
-                            height: 650,
-                            child: _buildChartCard(
-                              context,
-                              'Resting Heart Rate (RHR)',
-                              'bpm',
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(30),
+                          width: 700,
+                          height: 650,
+                          child: _buildChartCard(
+                            context,
+                            'Daily Steps',
+                            'steps',
 
-                              _buildRHRChart(filteredData, themes.isDarkMode),
-                              themes.isDarkMode,
+                            StepsChartScreen(
+                              data: filteredData,
+                              isDark: themes.isDarkMode,
+                              zoomPanBehavior: _zoomPanBehavior,
+                              trackballBehavior: _trackballBehavior,
                             ),
+                            themes.isDarkMode,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(30),
-                            width: 700,
-                            height: 650,
-                            child: _buildChartCard(
-                              context,
-                              'Daily Steps',
-                              'steps',
-                              _buildStepsChart(filteredData, themes.isDarkMode),
-                              themes.isDarkMode,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-            },
-          
+                      ),
+                    ],
+                  );
+          },
         );
       },
     );
@@ -417,122 +439,5 @@ class _SynchronizedBiometricChartsState
       default:
         return Colors.grey;
     }
-  }
-
-  Widget _buildRHRChart(List<BiometricData> data, bool isDark) {
-    return SfCartesianChart(
-      plotAreaBorderWidth: 0,
-      trackballBehavior: _trackballBehavior,
-      zoomPanBehavior: _zoomPanBehavior,
-      legend: Legend(
-        isVisible: true,
-        position: LegendPosition.top,
-        textStyle: GoogleFonts.montserrat(
-          color: isDark ? Colors.white70 : Colors.black54,
-          fontSize: 12,
-        ),
-      ),
-      primaryXAxis: DateTimeAxis(
-        majorGridLines: const MajorGridLines(width: 0),
-        axisLine: const AxisLine(width: 0),
-        labelStyle: TextStyle(
-          color: Provider.of<ThemeProvider>(context, listen: false).isDarkMode
-              ? Colors.white70
-              : Colors.black54,
-          fontSize: 11,
-        ),
-        dateFormat: DateFormat('MMM dd'),
-      ),
-      primaryYAxis: NumericAxis(
-        majorGridLines: MajorGridLines(
-          width: 0.5,
-          color: Provider.of<ThemeProvider>(context, listen: false).isDarkMode
-              ? Colors.white12
-              : Colors.black12,
-        ),
-        axisLine: const AxisLine(width: 0),
-        labelStyle: TextStyle(
-          color: isDark ? Colors.white70 : Colors.black54,
-          fontSize: 11,
-        ),
-      ),
-      series: <CartesianSeries>[
-        AreaSeries<BiometricData, DateTime>(
-          dataSource: data,
-          xValueMapper: (d, _) => d.date,
-          yValueMapper: (d, _) => d.rhr,
-          color: Colors.lightBlueAccent,
-          borderWidth: 3,
-          borderColor: Colors.lightBlueAccent,
-          gradient: LinearGradient(
-            colors: [
-              const Color(0xff90E0EF).withValues(alpha: 0.5),
-              const Color(0xff90E0EF).withValues(alpha: 0.1),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-          markerSettings: const MarkerSettings(
-            isVisible: true,
-            height: 6,
-            width: 6,
-            borderWidth: 2,
-            borderColor: Colors.white,
-          ),
-          name: 'RHR',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStepsChart(List<BiometricData> data, bool isDark) {
-    return SfCartesianChart(
-      plotAreaBorderWidth: 0,
-      trackballBehavior: _trackballBehavior,
-      zoomPanBehavior: _zoomPanBehavior,
-      legend: Legend(
-        isVisible: true,
-        position: LegendPosition.top,
-        textStyle: GoogleFonts.montserrat(
-          color: isDark ? Colors.white70 : Colors.black54,
-          fontSize: 12,
-        ),
-      ),
-      primaryXAxis: DateTimeAxis(
-        majorGridLines: const MajorGridLines(width: 0),
-        axisLine: const AxisLine(width: 0),
-        labelStyle: TextStyle(
-          color: isDark ? Colors.white70 : Colors.black54,
-          fontSize: 11,
-        ),
-        dateFormat: DateFormat('MMM dd'),
-      ),
-      primaryYAxis: NumericAxis(
-        majorGridLines: MajorGridLines(
-          width: 0.3,
-          color: isDark ? Colors.white12 : Colors.black12,
-        ),
-        axisLine: const AxisLine(width: 0),
-        labelStyle: GoogleFonts.montserrat(
-          color: isDark ? Colors.white70 : Colors.black54,
-          fontSize: 11,
-        ),
-      ),
-      series: <CartesianSeries>[
-        ColumnSeries<BiometricData, DateTime>(
-          dataSource: data,
-          xValueMapper: (d, _) => d.date,
-          yValueMapper: (d, _) => d.steps,
-          color: const Color(0xFF66BB6A),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-          gradient: LinearGradient(
-            colors: [const Color(0xFF4CAF50), const Color(0xFF66BB6A)],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
-          name: 'Steps',
-        ),
-      ],
-    );
   }
 }
