@@ -26,7 +26,7 @@ class DataService {
   }) async {
     return _simulateNetworkCall(() async {
       final String response = await rootBundle.loadString(
-        'assets/data/user_data.json',
+        'assets/data/biometrics.json',
       );
       final List<dynamic> data = json.decode(response);
       var biometrics = data

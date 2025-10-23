@@ -10,7 +10,7 @@ import 'package:health_dashboard/presentations/dashboard/presentation/charts/hrv
 import 'package:health_dashboard/presentations/dashboard/presentation/journal_dropdown.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class SynchronizedBiometricCharts extends StatefulWidget {
@@ -128,14 +128,7 @@ class _SynchronizedBiometricChartsState
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Skeletonizer(
-          enabled: Provider.of<DashboardState>(
-            context,
-            listen: false,
-          ).isLoading,
-          ignoreContainers: true,
-          effect: ShimmerEffect(baseColor: Colors.grey),
-          child: Consumer<ThemeProvider>(
+        return  Consumer<ThemeProvider>(
             builder: (context, themes, _) {
               bool isSmallScreen = constraints.maxWidth < 1300;
               return isSmallScreen
@@ -250,7 +243,7 @@ class _SynchronizedBiometricChartsState
                       ],
                     );
             },
-          ),
+          
         );
       },
     );
