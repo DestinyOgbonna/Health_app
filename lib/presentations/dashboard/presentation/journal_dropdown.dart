@@ -18,7 +18,7 @@ class JournalDetailsSheet extends StatefulWidget {
 class _JournalDetailsSheetState extends State<JournalDetailsSheet> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
+    return Consumer<ThemeProvider>( 
       builder: (context, theme, _) {
         return Container(
           decoration: BoxDecoration(
